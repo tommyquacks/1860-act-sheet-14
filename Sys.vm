@@ -1,0 +1,73 @@
+function Sys.min 0
+    pop temp 0
+    pop temp 1
+    push temp 1
+    push temp 0
+    gt
+    if-goto GREATER
+    push temp 1
+    goto END
+label GREATER
+    push temp 0
+label END
+    return
+
+function Sys.max 0
+    pop temp 0
+    pop temp 1
+    push temp 1
+    push temp 0
+    lt
+    if-goto LESS
+    push temp 1
+    goto END
+label LESS
+    push temp 0
+label END
+    return
+
+function Sys.range 3
+    push argument 1
+    push constant 1
+    gt
+    not
+    if-goto RETURN_ZERO
+    push argument 0
+    pop pointer 1
+    push that 0
+    pop local 0
+    push that 0
+    pop local 1
+    push constant 1
+    pop local 2
+label LOOP
+    push local 2
+    push argument 1
+    lt
+    not
+    if-goto END_LOOP
+    push argument 0
+    push local 2
+    add
+    pop pointer 1
+    push that 0
+    push local 0
+    call Sys.min 2
+    pop local 0
+    push that 0
+    push local 1
+    call Sys.max 2
+    pop local 1
+    push local 2
+    push constant 1
+    add
+    pop local 2
+    goto LOOP
+label END_LOOP
+    push local 1
+    push local 0
+    sub
+    return
+label RETURN_ZERO
+    push constant 0
+    return
