@@ -1,113 +1,86 @@
-// Sys.vm file with implementations of Sys.min, Sys.max, and Sys.range
 
-// Function to compute the minimum of two values
 function Sys.min 0
-    // Compare argument 0 and argument 1
-    push argument 0
-    push argument 1
-    lt
-    // If true (arg0 < arg1), jump to IF_TRUE
-    if-goto Sys.min$IF_TRUE
-    // Otherwise, jump to IF_FALSE
-    goto Sys.min$IF_FALSE
-label Sys.min$IF_TRUE
-    // Return arg0 (since arg0 < arg1)
-    push argument 0
-    goto Sys.min$END
-label Sys.min$IF_FALSE
-    // Return arg1 (since arg0 >= arg1)
-    push argument 1
-label Sys.min$END
-    return
-
-// Function to compute the maximum of two values
-function Sys.max 0
-    // Compare argument 0 and argument 1
     push argument 0
     push argument 1
     gt
-    // If true (arg0 > arg1), jump to IF_TRUE
-    if-goto Sys.max$IF_TRUE
-    // Otherwise, jump to IF_FALSE
-    goto Sys.max$IF_FALSE
-label Sys.max$IF_TRUE
-    // Return arg0 (since arg0 > arg1)
+    if-goto ARG0_GREATER_MIN
     push argument 0
-    goto Sys.max$END
-label Sys.max$IF_FALSE
-    // Return arg1 (since arg0 <= arg1)
+    goto MIN_END
+label ARG0_GREATER_MIN
     push argument 1
-label Sys.max$END
+label MIN_END
     return
 
-// Function to compute the range of an array
-function Sys.range 3
-    // Local variables: local 0 = i, local 1 = min_val, local 2 = max_val
-    // Set THIS to the starting address of the array
+
+
+function Sys.max 0
     push argument 0
-    pop pointer 0
-    // Check if n > 1
+    push argument 1
+    gt
+    if-goto ARG0_GREATER_MAX
+    push argument 1
+    goto MAX_END
+label ARG0_GREATER_MAX
+    push argument 0
+label MAX_END
+    return
+
+
+
+
+function Sys.range 2
     push argument 1
     push constant 1
     gt
-    if-goto Sys.range$COMPUTE_RANGE
-    // If n <= 1, return 0
-    push constant 0
-    return
-label Sys.range$COMPUTE_RANGE
-    // Initialize min_val and max_val to arr[0]
-    push pointer 0
-    push constant 0
-    add
+    not
+    if-goto RETURN_ZERO
+    push argument 0
     pop pointer 1
     push that 0
-    pop local 1
-    push that 0
-    pop local 2
-    // Initialize i = 1
-    push constant 1
     pop local 0
-label Sys.range$LOOP_START
-    // Check if i < n
-    push local 0
+    push that 0
+    pop local 1
+    push constant 1
+    pop temp 0
+label LOOP
+    push temp 0
     push argument 1
     lt
-    if-goto Sys.range$LOOP_BODY
-    goto Sys.range$LOOP_END
-label Sys.range$LOOP_BODY
-    // Compute new_min = Sys.min(min_val, arr[i])
-    push local 1
-    // Get arr[i]: set THAT = THIS + i
-    push pointer 0
+    not
+    if-goto END_LOOP
     push local 0
+    push argument 0
+    push temp 0
     add
     pop pointer 1
     push that 0
     call Sys.min 2
-    pop local 1
-    // Compute new_max = Sys.max(max_val, arr[i])
-    push local 2
-    // arr[i] is already on THAT from previous step
+    pop local 0
+    push local 1
+    push argument 0
+    push temp 0
+    add
+    pop pointer 1
     push that 0
     call Sys.max 2
-    pop local 2
-    // Increment i
-    push local 0
+    pop local 1
+    push temp 0
     push constant 1
     add
-    pop local 0
-    // Continue loop
-    goto Sys.range$LOOP_START
-label Sys.range$LOOP_END
-    // Compute and return range = max_val - min_val
-    push local 2
+    pop temp 0
+    goto LOOP
+label END_LOOP
     push local 1
+    push local 0
     sub
     return
+label RETURN_ZERO
+    push constant 0
+    return
 
-// Existing Sys.init function (unchanged)
+
+
 function Sys.init 0
-    // Call Sys.range with appropriate arguments (assumed to be already defined)
     call Sys.range 2
-    label INFINITE_LOOP
-    goto INFINITE_LOOP
+label WHILE
+    goto WHILE
